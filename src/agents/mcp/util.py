@@ -71,12 +71,24 @@ class MCPUtil:
             except Exception as e:
                 logger.info(f"Error converting MCP schema to strict mode: {e}")
 
+
+        # If MCPTool has an is_enabled attribute of the same type as FunctionTool,
+        # use it when building the FunctionTool.
+        is_enabled = True
+        attr = getattr(tool, "is_enabled", None)
+        if attr is not None:
+            if isinstance(attr, bool):
+                is_enabled = attr
+            if callable(attr):
+                is_enabled = attr
+
         return FunctionTool(
             name=tool.name,
             description=tool.description or "",
             params_json_schema=schema,
             on_invoke_tool=invoke_func,
             strict_json_schema=is_strict,
+            is_enabled=is_enabled,
         )
 
     @classmethod

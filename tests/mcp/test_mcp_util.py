@@ -74,6 +74,17 @@ async def test_get_all_function_tools():
     assert len(tools) == 5
     assert all(tool.name in names for tool in tools)
 
+    for tool in server1.list_tools():
+        if tool.name == "test_tool_1":
+            tool.is_enabled = False
+
+    tools = await MCPUtil.get_all_function_tools(servers, convert_schemas_to_strict=True)
+    for tool in tools:
+        if tool.name == "test_tool_1":
+            assert tool.is_enabled is False
+        else:
+            assert tool.is_enabled is True
+
 
 @pytest.mark.asyncio
 async def test_invoke_mcp_tool():

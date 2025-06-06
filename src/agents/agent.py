@@ -263,6 +263,8 @@ class Agent(Generic[TContext]):
                 return bool(await res)
             return bool(res)
 
-        results = await asyncio.gather(*(_check_tool_enabled(t) for t in self.tools))
+        all_tools = [*mcp_tools, *self.tools]
+        results = await asyncio.gather(*(_check_tool_enabled(t) for t in all_tools))
         enabled: list[Tool] = [t for t, ok in zip(self.tools, results) if ok]
-        return [*mcp_tools, *enabled]
+
+        return enabled
